@@ -33,10 +33,12 @@ function init(){
    //remove the first one as it had an extra empty one at the beginning
    timeBlockArray.shift();
    console.log("only 9 now", timeBlockArray)
+
    //this will set the classes
+
    //for each index of the timeBlockArray
    for (var i=0; i<timeBlockArray.length; i++){
-    //if the current hour is between 1-5 add 12 to make it 24 hours
+    //if the current hour is between 1-5 add 12 to make it military (24 hour) time
     if(currentHour <= 5 && currentHour >=1){
       currentHour += 12;
       //if the rowID (which is the data-attribute of time) is greater than the current hour
