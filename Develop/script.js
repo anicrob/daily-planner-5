@@ -4,74 +4,61 @@
 var currentDay = $("#currentDay");
 var currentHour = dayjs().format("HH")
 var storedRowMessage = JSON.parse(localStorage.getItem('planner-items')) || [];
-var currentMonthDayYearHourMinute = dayjs().format("MMMM D, YYYY ");
 var currentHour = dayjs().format("hh");
-var currentMinute= dayjs().format("mm");
-var currentSecond = dayjs().format("ss");
-var morningNight = dayjs().format("A");
 var timeBlock = $(".time-block");
 console.log(timeBlock);
 // console.log(object.rowID);
 // console.log("type of >>>", typeof(timeBlock));
-
-var rowOfData = {
-  rowID: '',
-  description: $(".description").text()
-}
+var timeBlockArray = [''];
 //timer - figure out how to get the ss only from the array
-function beginTimer(){
-    var timeInterval = setInterval(function () {
-    currentSecond++;
-    currentSecond.textContent = currentSecond;
-    if(currentSecond === 0){
-      clearInterval(timeInterval);
-    }
-    }, 1000);
+// function beginTimer(){
+//   var rightNow = dayjs().format('MMM DD, YYYY [at] hh:mm:ss a');
+//   timeDisplayEl.text(rightNow);
+// }
+function addCurrentTime (){
+  currentDay.text(dayjs().format('MMM DD, YYYY [at] hh:mm:ss a'));
+  console.log (currentHour);
 }
-
 
 function init(){
-  currentDay.text(currentMonthDayYearHourMinute + currentHour + ":" + currentMinute +  ":" + currentSecond + " " + morningNight);
-  console.log (currentHour);
+  addCurrentTime();  
+  setInterval(addCurrentTime,1000);
   $.each (timeBlock, function(){
-    rowOfData.rowID = $(this).data("time");
-    console.log(rowOfData);
-    // if (rowOfData.rowID >= 1 && rowOfData.rowID <=5){
-    //   rowOfData = rowOfData += 12;
-    //   console.log(rowOfData.rowID);
-    // }
+    rowID = $(this).data("time");
+    var rowOfData = {
+      rowID: rowID,
+      description: $(".description").text()
+    }
+    timeBlockArray.push(rowOfData);
+    console.log(timeBlockArray)
    })
-  
-   
+   timeBlockArray.shift();
+   console.log("only 9 now", timeBlockArray)
+   for (var i=0; i<timeBlockArray.length; i++){
+    if(currentHour <= 5 && currentHour >=1){
+      currentHour += 12
+      console.log(currentHour);
+    } else {
+      console.log(timeBlockArray[i].rowID, i);
+      if(timeBlockArray[i].rowID > currentHour){
+            $(this).addClass("future");
+            $(this).removeClass("past");
+            $(this).removeClass("present");
+        } else if (timeBlockArray[i].rowID < currentHour){
+            $(this).addClass("past");
+            $(this).removeClass("future");
+            $(this).removeClass("present");
+        } else {
+            $(this).addClass("present");
+            $(this).removeClass("future");
+            $(this).removeClass("past");
+        }
+    }
    }
-
-  // $.each(timeBlock, function(){
-  //   if (object.rowID <= 5 && object.rowID >=1){
-  //     object.rowID = object.rowID += 12
-  //     console.log(object.rowID)
-  //   }
-  // })
-  //   if(object.rowID > currentHour){
-  //     $(this).addClass("future");
-  //     $(this).removeClass("past");
-  //     $(this).removeClass("present");
-  // } else if (object.rowID < currentHour){
-  //     $(this).addClass("past");
-  //     $(this).removeClass("future");
-  //     $(this).removeClass("present");
-  // } else {
-  //     $(this).addClass("present");
-  //     $(this).removeClass("future");
-  //     $(this).removeClass("past");
-  // }
-
-// for (var i=0; i<timeBlock.length; i++){
-//   findRowID = timeBlock[i].attr("data", "time");
-//   console.log(findRowID);
-// }
-// }
-
-
+   //use this send timeBlockArray to the saveLocalStorage function as a parameter
+   saveLocalStorage(timeBlockArray);
+}
+  
 
 
 init();
@@ -102,3 +89,12 @@ init();
   //
   // TODO: Add code to display the current date in the header of the pa
 
+
+  // init() {
+  //   //your code here
+  //   localstoragefunction(rowOfData)
+  //   };
+  //   localstoragefunction(parameter){
+  //   // your other code that handles localstorage stuff
+  //   //here you passed rowOfData, so you would have access to it, but as parameter }
+  //   }
