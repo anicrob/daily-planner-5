@@ -1,4 +1,6 @@
 # Workday Scheduler 
+
+(Note: links are at the bottom of README)
 ## Description
 This application allows you to keep track of what you plan to work on each work hour. 
 
@@ -13,10 +15,10 @@ Then click the save button to save your input.
 HTML and CSS provided as starter code in this activity. I had assistance with the JS from at tutor at UNC. 
 
 This also used Bootstrap, day.js, and jQuery libraries. 
-## Screenshot
+## Screenshots
 ![Screenshot](./assets/workday-planner-top.png)
 
-You can see here that it was currently 5pm, so that timeblock is red.
+You can see here that since the time was currently between 5pm - 5:59pm, that timeblock is red.
 ![Screenshot](./assets/workday-planner-bottom.png)
 
 ## Link to Repo & Deployed Application
