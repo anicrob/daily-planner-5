@@ -14,9 +14,14 @@ HTML and CSS provided as starter code in this activity. I had assistance with th
 
 This also used Bootstrap, day.js, and jQuery libraries. 
 ## Screenshot
+![Screenshot](./assets/workday-planner-top.png)
+
+You can see here that it was currently 5pm, so that timeblock is red.
+![Screenshot](./assets/workday-planner-bottom.png)
 
 ## Link to Repo & Deployed Application
 Link to Repo:
 https://github.com/anicrob/daily-planner-5 
 
 Link to Deployed application:
+https://anicrob.github.io/daily-planner-5/ 
