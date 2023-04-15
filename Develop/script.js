@@ -1,130 +1,77 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
+//variables declared
 var currentDay = $("#currentDay");
-var currentHour = dayjs().format("HH")
-var storedRowMessage = JSON.parse(localStorage.getItem('planner-items')) || [];
-var currentHour = dayjs().format("hh");
 var timeBlock = $(".time-block");
-console.log(timeBlock);
-var timeBlockArray = [''];
 
-//adds current time to page
+//adds the correct classes (just declaring the function here)
+function addClasses(){
+  //set the currentHour to the current hour from dayjs() in military time
+  var currentHour = dayjs().hour();
+  console.log(currentHour);
+  //for each timeblock element
+  $(".time-block").each(function(){
+    //make it an integer, get the id attr of the timeblock, 
+    //split and get the index 1 value (0 index is the "hour" part), 
+    //the number in the id is all that's left
+    var blockHour = parseInt($(this).attr("id").split("-")[1])
+    console.log(blockHour);
+
+  //if the blockHour is before the currentHour, it is in the past
+  //add/remove the proper classes
+    if(blockHour < currentHour){
+      $(this).removeClass("future");
+      $(this).removeClass("present");
+      $(this).addClass("past");
+  //if the blockHour is equal to the currentHour, it is in the present
+  //add/remove the proper classes
+  } else if (blockHour === currentHour){
+      $(this).removeClass("past");
+      $(this).removeClass("future");
+      $(this).addClass("present");
+  //if the blockHour is after the currentHour, it is in the future
+  //add/remove the proper classes
+  } else {
+      $(this).removeClass("present");
+      $(this).removeClass("past");
+      $(this).addClass("future");
+  }
+     })
+    }
+
+//adds current time and correct classes to page
 function addCurrentTime (){
   currentDay.text(dayjs().format('MMM DD, YYYY [at] hh:mm:ss a'));
+  addClasses();
 }
+
 //runs on page refresh
 function init(){
-  //add the current time
+  //add the current time & correct classes
   addCurrentTime();  
-  //increment the current time in seconds
+  //increment the current time per second
   setInterval(addCurrentTime,1000);
-  //for each timeBlock element, set the rowID property to the data-time attribute
-  $.each (timeBlock, function(){
-    rowID = $(this).data("time");
-    var rowOfData = {
-      rowID: rowID,
-      description: $(".description").text()
-    }
-    //push this row of data into the timeBlock array
-    timeBlockArray.push(rowOfData);
-    console.log(timeBlockArray)
-   })
-   //remove the first one as it had an extra empty one at the beginning
-   timeBlockArray.shift();
-   console.log("only 9 now", timeBlockArray)
 
-   //this will set the classes
-
-   //for each index of the timeBlockArray
-   for (var i=0; i<timeBlockArray.length; i++){
-    //if the current hour is between 1-5 add 12 to make it military (24 hour) time
-    if(currentHour <= 5 && currentHour >=1){
-      currentHour += 12;
-      //if the rowID (which is the data-attribute of time) is greater than the current hour
-      //for each timeBlock element add future class and remove past/present classes
-      if(timeBlockArray[i].rowID > currentHour){
-        $(timeBlock[i]).addClass("future");
-        $(timeBlock[i]).removeClass("past");
-        $(timeBlock[i]).removeClass("present");
-      //if the rowID (which is the data-attribute of time) is less than the current hour
-      //for each timeBlock element add past class and remove future/present classes
-    } else if (timeBlockArray[i].rowID < currentHour){
-        $(timeBlock[i]).addClass("past");
-        $(timeBlock[i]).removeClass("future");
-        $(timeBlock[i]).removeClass("present");
-      //if the rowID (which is the data-attribute of time) equals the current hour
-      //for each timeBlock element add present class and remove past/future classes
-    } else {
-        $(timeBlock[i]).addClass("present");
-        $(timeBlock[i]).removeClass("future");
-        $(timeBlock[i]).removeClass("past");
-    }
-    //else 
-    } else {
-      console.log(timeBlockArray[i].rowID, i);
-      //if the rowID (which is the data-attribute of time) is greater than the current hour
-      //for each timeBlock element add future class and remove past/present classes
-      if(timeBlockArray[i].rowID > currentHour){
-            $(timeBlock[i]).addClass("future");
-            $(timeBlock[i]).removeClass("past");
-            $(timeBlock[i]).removeClass("present");
-      //if the rowID (which is the data-attribute of time) is less than the current hour
-      //for each timeBlock element add past class and remove future/present classes
-        } else if (timeBlockArray[i].rowID < currentHour){
-            $(timeBlock[i]).addClass("past");
-            $(timeBlock[i]).removeClass("future");
-            $(timeBlock[i]).removeClass("present");
-      //if the rowID (which is the data-attribute of time) equals the current hour
-      //for each timeBlock element add present class and remove past/future classes
-        } else {
-            $(timeBlock[i]).addClass("present");
-            $(timeBlock[i]).removeClass("future");
-            $(timeBlock[i]).removeClass("past");
-        }
-    }
-   }
-   //use this send timeBlockArray to the saveLocalStorage function as a parameter
-   saveLocalStorage(timeBlockArray);
+  $(".time-block").each(function(){
+    //this refers to the time-block selected in each "loop"
+    //back tick is to "find" or "search" for the id of each time block then make it more refined to the element with the description class
+    //set that value to what is in local storage for this element's id (as that was the key used to save in local storage)
+    //same as this, but in an each loop so it goes through each .time-block one by one
+      // $("#hour-9 .description").val(localStorage.getItem("hour-9"))
+    $(`#${$(this).attr("id")} .description`).val(localStorage.getItem($(this).attr("id")))
+  })
 }
-
+//call init function
 init();
 
-
-  $(".saveBtn").on("click", saveLocalStorage());
+  //on click on the save button, execute this function
+  $(".saveBtn").on("click", function(){
+    //using the time var to be the key name, which is the 
+    //save button's parent's id
+    //this is the save button, what I clicked on
+   var time = $(this).parent().attr("id");
+   //using the description var to get the save button's sibiling, the text area, with a class of description
+   //the value in that text area(that has the class of description) is stored in the var description 
+   var description = $(this).siblings(".description").val();
+   //I now set local storage using time as the key and description as the value to save
+   localStorage.setItem(time,description)
+  });
  
-  function saveLocalStorage(timeBlockArray){
-    storedRowMessage.push(timeBlockArray);
-    localStorage.setItem("planner-items", JSON.stringify(storedRowMessage)); 
-  }
-
-
-    // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? 
-   //How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? 
-  //How can Day.js be used to get the
-  // current hour in 24-hour time?
- 
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  //
-  // TODO: Add code to display the current date in the header of the pa
-
-
-  // init() {
-  //   //your code here
-  //   localstoragefunction(rowOfData)
-  //   };
-  //   localstoragefunction(parameter){
-  //   // your other code that handles localstorage stuff
-  //   //here you passed rowOfData, so you would have access to it, but as parameter }
-  //   }
